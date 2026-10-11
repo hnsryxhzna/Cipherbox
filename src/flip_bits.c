@@ -1,12 +1,10 @@
 #include <stdio.h>
 
-int flip_bits(int argc, char *argv[]) {
-    if (argc != 3) {
-        return 1;
-    }
+#include "flip_bits.h"
 
-    FILE *in = fopen(argv[1], "rb");
-    FILE *out = fopen(argv[2], "wb");
+int flip_bits(char *in_name, char *out_name) {
+    FILE *in = fopen(in_name, "rb");
+    FILE *out = fopen(out_name, "wb");
 
     if(!in || !out) {
         return 1;
