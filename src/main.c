@@ -2,6 +2,7 @@
 #include <limits.h>
 
 #include "flip_bits.h"
+#include "xor_bits.h"
 #include "strip_suffix.h"
 
 int main(int argc, char *argv[]) {
@@ -15,7 +16,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    flip_bits(argv[1], out_name);
+    // flip_bits(argv[1], out_name);
+    xor_bits(argv[1], out_name, "2753863");
 
     return 0;
 }
