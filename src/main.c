@@ -24,23 +24,31 @@ int get_enc_name(FILE *in, char *name_buffer) {
     return position;
 }
 
-int pre_process(char *in_name, char *out_name) {
+int process(char *in_name, char *out_name, char *key) {
     FILE *in = fopen(in_name, "rb");
-    FILE *out = fopen(out_name, "rb");
 
-    if (!in || !out) {
+    if (!in) {
         return 1;
     }
 
     unsigned char *name_buffer[255];
 
     int method = get_enc_method(in);
-    int get_enc_name(in, name_buffer);
+    int position = get_enc_name(in, name_buffer);
+    
+    FILE *out = fopen(name_buffer, "rb");
+    if (!out) {
+        return 1;
+    }
 
-    if (method == 1) {
-        flip_bits();
-    } else if (method == 2) {
-        xor_bits();
+    if (method == 0) {
+        flip_bits_enc(in, out, in_name);
+    } else if (method == 128) {
+        flip_bits_dec(in, out);
+    } else if (method == 1) {
+        xor_bits_enc(in, out, key, in_name);
+    } else if (method == 129) {
+        xor_bits_dec(in, out, key);
     }
 }
 
@@ -56,7 +64,9 @@ int main(int argc, char *argv[]) {
     }
 
     // flip_bits(argv[1], out_name);
-    xor_bits(argv[1], out_name, "2753863");
+    // xor_bits(argv[1], out_name, "2753863");
+
+    process(argv[1], out_name, "2753863");
 
     return 0;
 }
