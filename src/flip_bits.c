@@ -4,6 +4,9 @@
 
 #include "flip_bits.h"
 
+#define MAGIC_ENC "cipherbox_enc"
+#define MAGIC_LEN 13
+
 int flip_bits_enc(FILE *in, FILE *out, char *in_name) {
     int name_len = strlen(in_name);
     
@@ -15,7 +18,8 @@ int flip_bits_enc(FILE *in, FILE *out, char *in_name) {
         enc_name[i] = ~in_name[i];
     }
 
-    unsigned char method = 0;
+    unsigned char method = 128;
+    fwrite(MAGIC_ENC, 1, MAGIC_LEN, out);
     fputc(method, out);
     fwrite(&len_byte, 1, 1, out);
     fwrite(enc_name, 1, name_len, out);
@@ -28,13 +32,23 @@ int flip_bits_enc(FILE *in, FILE *out, char *in_name) {
         fwrite(buffer, 1, n, out);
     }
 
-    fclose(in);
-    fclose(out);
-
     return 0;
 }
 
-int flip_bits_dec(FILE *in, FILE *out) {
+int flip_bits_dec(FILE *in, char *enc_name) {
+    int name_len = strlen(enc_name);
+
+    unsigned char out_name[name_len];
+    for (int i = 0; i < name_len; i++) {
+        out_name[i] = ~enc_name[i];
+    }
+
+    FILE *out = fopen(out_name, "wbx");
+    if (!out) {
+        perror(out_name);
+        return -1;
+    }
+
     unsigned char buffer[1024];
 
     size_t n;
@@ -44,9 +58,6 @@ int flip_bits_dec(FILE *in, FILE *out) {
         }
         fwrite(buffer, 1, n, out);
     }
-
-    fclose(in);
-    fclose(out);
 
     return 0;
 }
