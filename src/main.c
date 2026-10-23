@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
     if (strcmp(argv[2], "-flip") == 0) {
         method = 0;
     } else if (strcmp(argv[2], "-xor") == 0) {
-        if (argc < 5) {
+        if (argc < 4) {
             printf("Password is needed\n");
             return 1;
         }
