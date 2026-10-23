@@ -8,8 +8,15 @@
 #define MAGIC_LEN 13
 
 int flip_bits_enc(FILE *in, FILE *out, char *in_name) {
-    int name_len = strlen(in_name);
-    
+    char* slash = strrchr(in_name, '/');
+    in_name = slash ? slash + 1 : in_name;
+    size_t name_len = strlen(in_name);
+
+    if (name_len == 0 || name_len > 255) {
+        fprintf(stderr, "file name too long: %s\n", in_name);
+        return 1;
+    }
+
     unsigned char buffer[1024];
     unsigned char enc_name[name_len];
     unsigned char len_byte = (unsigned char) name_len;

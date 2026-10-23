@@ -7,8 +7,15 @@
 #define MAGIC_LEN 13
 
 int xor_bits_enc(FILE *in, FILE *out, char *key, char *in_name) {
+    char* slash = strrchr(in_name, '/');
+    in_name = slash ? slash + 1 : in_name;
     int key_len = strlen(key);
-    int name_len = strlen(in_name);
+    size_t name_len = strlen(in_name);
+
+    if (name_len == 0 || name_len > 255) {
+        fprintf(stderr, "file name too long: %s\n", in_name);
+        return 1;
+    }
 
     unsigned char buffer[1024];
     unsigned char enc_name[name_len];
