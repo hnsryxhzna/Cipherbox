@@ -47,12 +47,11 @@ int get_enc_name(FILE *file, char *name_buffer) {
 }
 
 int process(char *in_name, int enc_method, char *out_name, char *key) {
-    // TODO: FIX
-    printf("out_name: %s\n", out_name);
-
     FILE *in = fopen(in_name, "rb");
     if (!in) {
         perror(in_name);
+        return 1;
+    } else if (enc_method == -1) {
         fclose(in);
         return 1;
     }
@@ -76,10 +75,8 @@ int process(char *in_name, int enc_method, char *out_name, char *key) {
         int method = get_enc_method(in);
         printf("%d\n", method);
 
-        char name_buffer[255];
+        char name_buffer[256];
         int position = get_enc_name(in, name_buffer);
-
-        printf("Dec %s to %s\n", in_name, name_buffer);
     
         if (method > 127) {
             if (method == 128) {
@@ -98,17 +95,34 @@ int process(char *in_name, int enc_method, char *out_name, char *key) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc < 3) {
         return 1;
     }
 
     char out_name[PATH_MAX];
-    if (strip_suffix(argv[1], out_name, sizeof(out_name)) != 0) {
-        fprintf(stderr, "name too long\n");
+    // if (strip_suffix(argv[1], out_name, sizeof(out_name)) != 0) {
+    //     fprintf(stderr, "name too long\n");
+    //     return 1;
+    // }
+    snprintf(out_name, sizeof(out_name), "%s.cbx", argv[1]);
+
+    char* key = NULL;
+    int method = -1;
+
+    if (strcmp(argv[2], "-flip") == 0) {
+        method = 0;
+    } else if (strcmp(argv[2], "-xor") == 0) {
+        if (argc < 4) {
+            printf("Password is needed\n");
+            return 1;
+        }
+        method = 1;
+        key = argv[3];
+    } else {
         return 1;
     }
 
-    process(argv[1], 1, out_name, "2753863");
+    process(argv[1], method, out_name, key);
 
     return 0;
 }

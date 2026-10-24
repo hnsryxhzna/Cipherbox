@@ -39,10 +39,13 @@ int xor_bits_dec(FILE *in, char *enc_name, char *key) {
     int key_len = strlen(key);
     int name_len = strlen(enc_name);
 
-    unsigned char out_name[name_len];
+    unsigned char out_name[name_len + 1];
     for (int i = 0; i < name_len; i++) {
         out_name[i] = enc_name[i] ^ key[i % key_len];
     }
+    out_name[name_len] = '\0';
+
+    printf("Dec to %s\n", out_name);
 
     FILE *out = fopen(out_name, "wbx");
     if (!out) {
@@ -59,5 +62,6 @@ int xor_bits_dec(FILE *in, char *enc_name, char *key) {
         fwrite(buffer, 1, n, out);
     }
 
+    fclose(out);
     return 0;
 }
